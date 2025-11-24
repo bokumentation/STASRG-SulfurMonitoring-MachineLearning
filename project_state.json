@@ -1,0 +1,423 @@
+{
+  "project_metadata": {
+    "project_name": "ESP32 Air Quality ML Monitoring System",
+    "location": "Kawah Putih Volcanic Crater, Ciwidey, Indonesia",
+    "purpose": "Deploy ML model on 5 ESP32 devices for distributed air quality monitoring near H2S/SO2 volcanic source",
+    "last_updated": "2025-11-21",
+    "student_background": {
+      "ml_experience": "Beginner - first time training ML models",
+      "embedded_experience": "Intermediate - Arduino IDE background, learning ESP-IDF",
+      "programming_languages": ["Python", "C", "Arduino"],
+      "preferred_framework": "PyTorch + ONNX for deployment"
+    }
+  },
+
+  "ml_model_details": {
+    "algorithm": "Supervised Learning - Multi-class Classification",
+    "model_type": "Feedforward Artificial Neural Network (ANN)",
+    "framework": "PyTorch (training), ONNX (deployment), Custom C (inference)",
+    "architecture": {
+      "input_layer": 5,
+      "hidden_layer_1": {"neurons": 64, "activation": "ReLU", "dropout": 0.2},
+      "hidden_layer_2": {"neurons": 32, "activation": "ReLU", "dropout": 0.2},
+      "output_layer": 5,
+      "total_parameters": 2629
+    },
+    "input_features": [
+      {"name": "h2s", "unit": "µg/m³", "description": "Hydrogen Sulfide concentration"},
+      {"name": "so2", "unit": "µg/m³", "description": "Sulfur Dioxide concentration"},
+      {"name": "wind_speed", "unit": "m/s", "description": "Wind speed"},
+      {"name": "temperature", "unit": "°C", "description": "Ambient temperature"},
+      {"name": "humidity", "unit": "%", "description": "Relative humidity"}
+    ],
+    "output_classes": [
+      {"id": 0, "name": "Normal", "description": "Safe air quality"},
+      {"id": 1, "name": "Caution", "description": "Slight concern"},
+      {"id": 2, "name": "Warning", "description": "Moderate risk"},
+      {"id": 3, "name": "Danger", "description": "High risk"},
+      {"id": 4, "name": "Critical", "description": "Extreme danger"}
+    ],
+    "training_config": {
+      "loss_function": "CrossEntropyLoss with safety-focused class weights",
+      "optimizer": "Adam",
+      "learning_rate": 0.001,
+      "epochs": 50,
+      "batch_size": 32,
+      "train_test_split": "80/20",
+      "class_weights": [1.0, 1.0, 1.2, 1.5, 2.0],
+      "class_weight_reasoning": "Heavily penalize underestimating danger - prefer false alarms over missing critical conditions",
+      "oversampling": "WeightedRandomSampler to balance minority classes"
+    },
+    "performance": {
+      "training_accuracy": 0.73,
+      "test_accuracy": 0.70,
+      "overfitting_gap": 0.03,
+      "critical_class_recall": 0.92,
+      "model_behavior": "Conservative - prefers overestimating danger for safety"
+    },
+    "model_size": {
+      "pytorch_pth": "N/A KB",
+      "onnx_float32": "7.22 KB",
+      "onnx_int8_attempted": "Failed due to quantization toolchain issues",
+      "deployed_format": "Float32",
+      "c_header_file": "33 KB (includes formatting)",
+      "esp32_ram_usage": "~7.64 KB total (1.5% of 520KB)"
+    },
+    "computational_load": {
+      "multiplications_per_inference": 2528,
+      "expected_inference_time_esp32": "<10ms",
+      "inferences_per_second_capability": "Thousands (lightweight for ESP32)"
+    }
+  },
+
+  "data_details": {
+    "dataset_type": "Synthetic (volcanic source profile)",
+    "total_samples": 5000,
+    "train_samples": 4000,
+    "test_samples": 1000,
+    "generation_method": "Rule-based with environmental correlations",
+    "volcanic_adjustments": {
+      "h2s_scale": 150,
+      "so2_scale": 200,
+      "reasoning": "3-5x higher than typical urban baseline to match Kawah Putih volcanic emissions"
+    },
+    "environmental_correlations": {
+      "wind_speed_effect": "Negative correlation with pollutants (dispersion)",
+      "temperature_effect": "Slight positive correlation (photochemical reactions)",
+      "humidity_effect": "Affects gas dispersion patterns"
+    },
+    "class_distribution": {
+      "normal": "~13%",
+      "caution": "~28%",
+      "warning": "~37%",
+      "danger": "~16%",
+      "critical": "~6%",
+      "note": "Distribution reflects volcanic source environment - higher pollution baseline"
+    },
+    "future_improvement": "Replace with real sensor data from Kawah Putih field deployment"
+  },
+
+  "completed_steps": {
+    "step_1": {
+      "name": "Understanding Fundamentals",
+      "status": "✓ Completed",
+      "key_learnings": [
+        "ESP32 constraints: 520KB RAM, limited processing",
+        "Model size calculation: parameters × bytes_per_parameter",
+        "Train/test split concept (80/20)",
+        "Quantization reduces size 4x (float32→int8)",
+        "Computational load estimation"
+      ]
+    },
+    "step_2": {
+      "name": "Synthetic Dataset Generation",
+      "status": "✓ Completed",
+      "files_generated": [
+        "air_quality_train.csv",
+        "air_quality_test.csv"
+      ],
+      "script": "01-1_synthetic_dataset_generator.py"
+    },
+    "step_3": {
+      "name": "Model Training",
+      "status": "✓ Completed",
+      "files_generated": [
+        "best_model.pth",
+        "confusion_matrix.png",
+        "training_curves.png"
+      ],
+      "script": "01-2_train_model.py",
+      "key_decisions": [
+        "Used class weights for safety-focused training",
+        "Implemented oversampling for minority classes",
+        "Added dropout for regularization",
+        "Conservative prediction bias (prefer false alarms)"
+      ]
+    },
+    "step_4": {
+      "name": "ONNX Conversion",
+      "status": "✓ Completed (Float32 only)",
+      "files_generated": [
+        "air_quality_model.onnx"
+      ],
+      "script": "01-3_onnx_conversion.py",
+      "issues": [
+        "Removed Dropout layers for cleaner export",
+        "Int8 quantization failed due to shape inference errors",
+        "Proceeded with Float32 (acceptable for ESP32)"
+      ]
+    },
+    "step_5": {
+      "name": "Weight Extraction to C Arrays",
+      "status": "✓ Completed",
+      "files_generated": [
+        "model_weights.h (33KB)"
+      ],
+      "script": "01-4_weight_extractor.py",
+      "note": "Extracted 6 weight tensors (3 layers × 2 per layer)"
+    },
+    "step_6": {
+      "name": "C Inference Implementation",
+      "status": "✓ Completed",
+      "files_generated": [
+        "model_inference.h",
+        "model_inference.c"
+      ],
+      "approach": "Custom C implementation (no TensorFlow Lite)",
+      "reasoning": "Student is learning ESP-IDF, simpler approach preferred",
+      "key_functions": [
+        "model_init()",
+        "model_predict()",
+        "dense_layer() - matrix multiplication",
+        "relu() - activation",
+        "softmax() - confidence scores"
+      ]
+    }
+  },
+
+  "current_step": {
+    "step_number": 7,
+    "name": "Test Inference on PC",
+    "status": "⏳ In Progress",
+    "description": "Verify C inference implementation works correctly before ESP32 deployment",
+    "files_needed": [
+      "model_weights.h",
+      "model_inference.h",
+      "model_inference.c",
+      "test_inference.c"
+    ],
+    "compile_command": "gcc -o test_inference test_inference.c model_inference.c -lm",
+    "expected_outcome": "Predictions should match ONNX model within reasonable tolerance",
+    "tolerance": "Close enough is okay - care about correct classification, confidence within ±1-2%",
+    "next_action": "Student needs to compile and run test program, report results"
+  },
+
+  "pending_steps": [
+    {
+      "step_number": 8,
+      "name": "Create ESP-IDF Project Structure",
+      "status": "Not Started",
+      "description": "Set up firmware folder with ESP-IDF standard structure",
+      "proposed_structure": {
+        "firmware/": {
+          "main/": [
+            "main.c",
+            "model_inference.c",
+            "model_inference.h",
+            "model_weights.h",
+            "sensor_interface.c (future)",
+            "network_comm.c (future)"
+          ],
+          "CMakeLists.txt": "ESP-IDF build configuration",
+          "sdkconfig": "ESP32 configuration"
+        }
+      }
+    },
+    {
+      "step_number": 9,
+      "name": "Implement Sensor Interface",
+      "status": "Not Started",
+      "sensors_needed": [
+        "H2S sensor (type TBD)",
+        "SO2 sensor (type TBD)",
+        "Wind speed sensor",
+        "Temperature sensor (DHT22/BME280)",
+        "Humidity sensor"
+      ],
+      "notes": "Another team is working on sensor hardware"
+    },
+    {
+      "step_number": 10,
+      "name": "Integrate Inference in ESP32 Main Loop",
+      "status": "Not Started",
+      "flow": [
+        "Initialize sensors",
+        "Initialize model",
+        "Loop: Read sensors → Run inference → Display results → Send to network"
+      ]
+    },
+    {
+      "step_number": 11,
+      "name": "Implement Network Communication",
+      "status": "Not Started",
+      "architecture": "5 ESP32 devices in distributed network",
+      "communication_options": [
+        "ESP-NOW (low latency, peer-to-peer)",
+        "MQTT (publish/subscribe)",
+        "WiFi Direct"
+      ],
+      "design": "Each ESP32 runs inference locally, broadcasts classification result"
+    },
+    {
+      "step_number": 12,
+      "name": "Add Safety Features",
+      "status": "Not Started",
+      "features": [
+        "Alarm thresholds (buzzer/LED)",
+        "Watchdog timer",
+        "Sensor failure detection",
+        "Data logging (SD/cloud)",
+        "Battery management"
+      ]
+    },
+    {
+      "step_number": 13,
+      "name": "Field Testing at Kawah Putih",
+      "status": "Not Started",
+      "activities": [
+        "Measure inference time",
+        "Test RAM usage",
+        "Verify network reliability",
+        "Calibrate with real data",
+        "Collect real sensor data for retraining"
+      ]
+    }
+  ],
+
+  "key_technical_decisions": {
+    "why_custom_c_inference": "Student is learning ESP-IDF. Custom C is simpler than TFLite, educational, and sufficient for small model.",
+    "why_float32_not_int8": "Quantization toolchain had issues. Float32 at 7.22KB still fits comfortably on ESP32 (1.5% RAM).",
+    "why_conservative_predictions": "Safety-critical application near volcanic crater. Better to have false alarms than miss dangerous conditions.",
+    "why_synthetic_data": "Real Kawah Putih data not yet available. Synthetic data with volcanic profile allows pipeline development and learning.",
+    "why_70_percent_acceptable": "Initial target was 90%, revised to 80-85% as realistic. 70% is acceptable for prototype with plan to retrain on real data."
+  },
+
+  "important_context": {
+    "student_learning_style": [
+      "Benefits from step-by-step explanations",
+      "Learns well through guided questions",
+      "Honest about knowledge gaps",
+      "Practical mindset - wants working prototype",
+      "Coming from Arduino background, adapting to ESP-IDF"
+    ],
+    "teaching_approach_used": [
+      "Socratic questioning to build understanding",
+      "Verify comprehension before advancing",
+      "Break complex topics into digestible steps",
+      "Use concrete examples and scenarios",
+      "Encourage problem-solving rather than giving direct answers",
+      "Acknowledge when topics are confusing and re-explain differently"
+    ],
+    "critical_moments": [
+      "Understanding matrix multiplication in 1D arrays (struggled initially, needed concrete example)",
+      "Recognizing Dropout as ONNX export issue (good intuition after guidance)",
+      "Accepting 70% vs 90% accuracy (matured expectations realistically)",
+      "Choosing 'close enough' tolerance for inference verification (good engineering judgment)"
+    ]
+  },
+
+  "repository_structure": {
+    "current_layout": {
+      "data/": ["air_quality_train.csv", "air_quality_test.csv"],
+      "experiments/": ["conversion1_onnx.txt", "training1_terminal_output.txt", "training1_confusion_matrix.png", "training1_curves.png"],
+      "models/": ["air_quality_model_complete.pth", "air_quality_model.onnx", "air_quality_model.onnx.data", "air_quality_model.pth", "best_model.pth"],
+      "src/": ["synthetic_dataset_generator v1.py", "building_model.py", "onnx_conversion.py", "weight_extractor.py"],
+      "README.md": "Project documentation"
+    },
+    "recommended_improvements": [
+      "Rename scripts to show execution order (01_, 02_, etc.)",
+      "Clean up duplicate model files (keep best_model.pth only)",
+      "Add firmware/ folder for ESP32 code (separate from Python ML pipeline)",
+      "Create test_folder/ for PC inference testing"
+    ]
+  },
+
+  "files_inventory": {
+    "python_scripts": [
+      {
+        "name": "01-1_synthetic_dataset_generator.py",
+        "purpose": "Generate synthetic air quality dataset with volcanic source profile",
+        "outputs": ["air_quality_train.csv", "air_quality_test.csv"]
+      },
+      {
+        "name": "01-2_train_model.py",
+        "purpose": "Train PyTorch neural network with safety-focused configuration",
+        "outputs": ["best_model.pth", "confusion_matrix.png", "training_curves.png"]
+      },
+      {
+        "name": "01-3_onnx_conversion.py",
+        "purpose": "Convert PyTorch model to ONNX format, attempt quantization",
+        "outputs": ["air_quality_model.onnx"]
+      },
+      {
+        "name": "01-4_weight_extractor.py",
+        "purpose": "Extract ONNX weights to C array format",
+        "outputs": ["model_weights.h"]
+      }
+    ],
+    "c_files": [
+      {
+        "name": "model_weights.h",
+        "size": "33 KB",
+        "purpose": "Trained model weights as C arrays for ESP32"
+      },
+      {
+        "name": "model_inference.h",
+        "purpose": "Header file with inference function declarations"
+      },
+      {
+        "name": "model_inference.c",
+        "purpose": "Implementation of neural network forward pass in C"
+      },
+      {
+        "name": "test_inference.c",
+        "purpose": "PC test program to verify C inference before ESP32 deployment"
+      }
+    ]
+  },
+
+  "next_session_instructions": {
+    "if_step_7_incomplete": [
+      "Student needs to compile and run test_inference.c",
+      "Review predictions to ensure they make sense",
+      "Compare with ONNX predictions if accuracy concerns",
+      "Once verified, proceed to Step 8 (ESP-IDF project setup)"
+    ],
+    "if_step_7_complete": [
+      "Create ESP-IDF project structure in firmware/ folder",
+      "Port C inference code to ESP-IDF",
+      "Implement basic main.c with dummy sensor data",
+      "Verify model runs on actual ESP32 hardware",
+      "Begin sensor interface implementation"
+    ],
+    "quick_recap_needed": [
+      "We built a complete ML pipeline from scratch",
+      "Model is trained, converted to ONNX, weights extracted to C",
+      "Currently testing C inference on PC before ESP32",
+      "Goal: 5 ESP32 devices monitoring air quality at Kawah Putih",
+      "Student is learning ESP-IDF, prefers step-by-step approach"
+    ]
+  },
+
+  "known_issues": {
+    "quantization_failure": {
+      "description": "ONNX to Int8 quantization fails with shape inference error",
+      "root_cause": "ONNX opset version incompatibility with quantization toolchain",
+      "workaround": "Using Float32 model (7.22KB, still fits ESP32)",
+      "future_fix": "Update ONNX toolchain or try TensorFlow Lite converter"
+    },
+    "model_file_confusion": {
+      "description": "Multiple .pth files in models/ folder",
+      "clarification": "best_model.pth is the correct one to use",
+      "action": "Could clean up others to avoid confusion"
+    }
+  },
+
+  "future_enhancements": [
+    "Retrain with real Kawah Putih sensor data",
+    "Add time-series analysis for trend prediction",
+    "Implement OTA updates for model weights",
+    "Add more sensor inputs (atmospheric pressure, wind direction, distance from fumarole)",
+    "Successfully implement Int8 quantization",
+    "Explore TensorFlow Lite for more complex models",
+    "Add web dashboard for monitoring all 5 ESP32 devices"
+  ],
+
+  "reference_links": {
+    "who_air_quality_guidelines": "Used for pollutant thresholds in rule-based labeling",
+    "kawah_putih_research": "Scientific data on volcanic gas concentrations used for dataset generation",
+    "esp_idf_docs": "https://docs.espressif.com/projects/esp-idf/",
+    "onnx_docs": "https://onnx.ai/",
+    "pytorch_docs": "https://pytorch.org/docs/"
+  }
+}
