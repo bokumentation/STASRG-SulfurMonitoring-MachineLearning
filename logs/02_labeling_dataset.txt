@@ -1,0 +1,31 @@
+Loading data from kawah_putih_synthetic.csv...
+Loaded 60000 samples from 3 nodes
+Date range: 2025-12-01 00:00:00 to 2025-12-03 07:33:10
+
+Converting H2S to ppm...
+Classifying pollutant levels...
+Applying combination logic...
+
+============================================================
+CLASS DISTRIBUTION:
+============================================================
+Caution   :  5688 samples (  9.5%)
+Danger    : 34841 samples ( 58.1%)
+Normal    :  1577 samples (  2.6%)
+Warning   : 17894 samples ( 29.8%)
+
+============================================================
+POLLUTANT RANGES:
+============================================================
+SO2:    60.0 - 1080.0 µg/m³
+H2S:     0.0 -  360.0 µg/m³
+      0.0000 - 0.2602 ppm
+
+Labeled dataset saved to: kawah_putih_labeled.csv
+Features: node, so2_ugm3, h2s_ugm3, temp_c, rh_pct, wind_speed_ms, wind_dir_deg, battery_v, rssi
+Label: label
+Total samples: 60000
+
+Data labeling complete!
+
+Next step: Train your neural network on this labeled dataset

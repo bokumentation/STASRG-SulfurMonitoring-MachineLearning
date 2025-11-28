@@ -1,0 +1,56 @@
+======================================================================
+ONNX TO C WEIGHT EXTRACTION FOR ESP32
+======================================================================
+Input:  models/air_quality_model.onnx
+Output: model_weights.h
+
+======================================================================
+EXTRACTING WEIGHTS FROM ONNX MODEL
+======================================================================
+✓ Loaded ONNX model from 'models/air_quality_model.onnx'
+  Found: fc1.weight           shape=(64, 5)         dtype=float32
+  Found: fc1.bias             shape=(64,)           dtype=float32
+  Found: fc2.bias             shape=(32,)           dtype=float32
+  Found: fc3.weight           shape=(5, 32)         dtype=float32
+  Found: fc3.bias             shape=(5,)            dtype=float32
+  Found: fc2.weight           shape=(32, 64)        dtype=float32
+
+✓ Extracted 6 weight tensors
+
+======================================================================
+VERIFICATION
+======================================================================
+✓ fc1.weight     : (64, 5)         (correct)
+✓ fc1.bias       : (64,)           (correct)
+✓ fc2.weight     : (32, 64)        (correct)
+✓ fc2.bias       : (32,)           (correct)
+✓ fc3.weight     : (5, 32)         (correct)
+✓ fc3.bias       : (5,)            (correct)
+
+✓ All weights verified successfully!
+
+======================================================================
+GENERATING C HEADER FILE
+======================================================================
+Processing fc1.weight: shape (64, 5)
+Processing fc1.bias: shape (64,)
+Processing fc2.weight: shape (32, 64)
+Processing fc2.bias: shape (32,)
+Processing fc3.weight: shape (5, 32)
+Processing fc3.bias: shape (5,)
+
+✓ C header file generated: 'model_weights.h'
+✓ Total parameters: 2,629
+✓ Estimated size in flash: 10.27 KB
+
+======================================================================
+SUCCESS!
+======================================================================
+
+Your model weights are ready for ESP32 deployment!
+Next steps:
+  1. Copy 'model_weights.h' to your ESP-IDF project
+  2. #include "model_weights.h" in your inference code
+  3. Use the weight arrays in your forward pass function
+
+======================================================================

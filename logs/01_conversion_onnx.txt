@@ -1,0 +1,114 @@
+======================================================================
+STEP 1: LOADING TRAINED MODEL & CREATING INFERENCE VERSION
+======================================================================
+✓ Loaded trained weights from 'best_model.pth'
+✓ Created inference model (without Dropout)
+✓ Copied trained weights to inference model
+✓ Model set to evaluation mode
+✓ Total parameters: 2,629
+
+======================================================================
+STEP 2: VERIFYING INFERENCE MODEL (PyTorch)
+======================================================================
+Test samples: 1000
+✓ PyTorch Inference Model Accuracy: 0.7000 (70.00%)
+  (Should match training accuracy of ~70%)
+
+======================================================================
+STEP 3: EXPORTING TO ONNX FORMAT
+======================================================================
+Dummy input shape: torch.Size([1, 5])
+c:\Users\adit\Desktop\Sulfur Monitoring\STASRG-SulfurMonitoring-MachineLearning\onnx_conversion.py:185: UserWarning: # 'dynamic_axes' is not recommended when dynamo=True, and may lead to 'torch._dynamo.exc.UserError: Constraints violated.' Supply the 'dynamic_shapes' argument instead if export is unsuccessful.
+  torch.onnx.export(
+W1121 07:38:53.801000 9252 site-packages\torch\onnx\_internal\exporter\_compat.py:114] Setting ONNX exporter to use operator set version 18 because the requested opset_version 13 is a lower version than we have implementations for. Automatic version conversion will be performed, which may not be successful at converting to the requested version. If version conversion is unsuccessful, the opset version of the exported model will be kept at 18. Please consider setting opset_version >=18 to leverage latest ONNX features
+[torch.onnx] Obtain model graph for `AirQualityNetInference([...]` with `torch.export.export(..., strict=False)`...
+[torch.onnx] Obtain model graph for `AirQualityNetInference([...]` with `torch.export.export(..., strict=False)`... ✅
+[torch.onnx] Run decomposition...
+[torch.onnx] Run decomposition... ✅
+[torch.onnx] Translate the graph into ONNX...
+[torch.onnx] Translate the graph into ONNX... ✅
+The model version conversion is not supported by the onnxscript version converter and fallback is enabled. The model will be converted using the onnx C API (target version: 13).
+Failed to convert the model to the target version 13 using the ONNX C API. The model was not modified
+Traceback (most recent call last):
+  File "C:\Users\adit\AppData\Local\Programs\Python\Python313\Lib\site-packages\onnxscript\version_converter\__init__.py", line 127, in call
+    converted_proto = _c_api_utils.call_onnx_api(
+        func=_partial_convert_version, model=model
+    )
+  File "C:\Users\adit\AppData\Local\Programs\Python\Python313\Lib\site-packages\onnxscript\version_converter\_c_api_utils.py", line 65, in call_onnx_api
+    result = func(proto)
+  File "C:\Users\adit\AppData\Local\Programs\Python\Python313\Lib\site-packages\onnxscript\version_converter\__init__.py", line 122, in _partial_convert_version
+    return onnx.version_converter.convert_version(
+           ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~^
+        proto, target_version=self.target_version
+        ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+    )
+    ^
+  File "C:\Users\adit\AppData\Local\Programs\Python\Python313\Lib\site-packages\onnx\version_converter.py", line 39, in convert_version
+    converted_model_str = C.convert_version(model_str, target_version)
+RuntimeError: D:\a\onnx\onnx\onnx/version_converter/BaseConverter.h:68: adapter_lookup: Assertion `false` failed: No Adapter From Version $14 for Relu
+✓ ONNX model exported to 'air_quality_model.onnx'
+✓ ONNX model verification passed
+✓ ONNX model size: 7.22 KB
+
+======================================================================
+STEP 4: TESTING ONNX MODEL (Float32)
+======================================================================
+✓ ONNX Float32 Accuracy: 0.7000 (70.00%)
+  (Should match PyTorch accuracy)
+
+======================================================================
+STEP 5: QUANTIZING TO INT8
+======================================================================
+Applying dynamic quantization...
+  - Converting Float32 weights → Int8
+  - Keeping activations in Float32
+  - This reduces model size by ~4x
+
+✗ Quantization failed: quantize_dynamic() got an unexpected keyword argument 'optimize_model'        
+
+Trying alternative quantization method...
+WARNING:root:Please consider to run pre-processing before quantization. Refer to example: https://github.com/microsoft/onnxruntime-inference-examples/blob/main/quantization/image_classification/cpu/ReadMe.md
+Traceback (most recent call last):
+  File "c:\Users\adit\Desktop\Sulfur Monitoring\STASRG-SulfurMonitoring-MachineLearning\onnx_conversion.py", line 255, in <module>
+    quantize_dynamic(
+    ~~~~~~~~~~~~~~~~^
+        model_input=onnx_model_path,
+        ^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+    ...<3 lines>...
+        optimize_model=True
+        ^^^^^^^^^^^^^^^^^^^
+    )
+    ^
+TypeError: quantize_dynamic() got an unexpected keyword argument 'optimize_model'
+
+During handling of the above exception, another exception occurred:
+
+Traceback (most recent call last):
+  File "c:\Users\adit\Desktop\Sulfur Monitoring\STASRG-SulfurMonitoring-MachineLearning\onnx_conversion.py", line 268, in <module>
+    quantize_dynamic(
+    ~~~~~~~~~~~~~~~~^
+        model_input=onnx_model_path,
+        ^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+        model_output=quantized_model_path,
+        ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+        weight_type=QuantType.QInt8
+        ^^^^^^^^^^^^^^^^^^^^^^^^^^^
+    )
+    ^
+  File "C:\Users\adit\AppData\Local\Programs\Python\Python313\Lib\site-packages\onnxruntime\quantization\quantize.py", line 877, in quantize_dynamic
+    quantizer = ONNXQuantizer(
+        model,
+    ...<10 lines>...
+        extra_options,
+    )
+  File "C:\Users\adit\AppData\Local\Programs\Python\Python313\Lib\site-packages\onnxruntime\quantization\onnx_quantizer.py", line 71, in __init__
+    model = save_and_reload_model_with_shape_infer(self.model.model)
+  File "C:\Users\adit\AppData\Local\Programs\Python\Python313\Lib\site-packages\onnxruntime\quantization\quant_utils.py", line 1033, in save_and_reload_model_with_shape_infer
+    return load_model_with_shape_infer(model_path)
+  File "C:\Users\adit\AppData\Local\Programs\Python\Python313\Lib\site-packages\onnxruntime\quantization\quant_utils.py", line 1021, in load_model_with_shape_infer
+    onnx.shape_inference.infer_shapes_path(str(model_path), str(inferred_model_path))
+    ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\adit\AppData\Local\Programs\Python\Python313\Lib\site-packages\onnx\shape_inference.py", line 102, in infer_shapes_path
+    C.infer_shapes_path(model_path, output_path, check_type, strict_mode, data_prop)
+    ~~~~~~~~~~~~~~~~~~~^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+onnx.onnx_cpp2py_export.shape_inference.InferenceError: [ShapeInferenceError] Inferred shape and existing shape differ in dimension 0: (5) vs (64)

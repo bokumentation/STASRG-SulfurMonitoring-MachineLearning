@@ -1,0 +1,85 @@
+Using device: cpu
+
+Loading datasets...
+
+============================================================
+CLASS WEIGHTS (higher = more important)
+============================================================
+Normal      :  531 samples, weight = 1.507
+Caution     : 1103 samples, weight = 0.725
+Warning     : 1488 samples, weight = 0.538
+Danger      :  635 samples, weight = 2.520
+Critical    :  243 samples, weight = 6.584
+
+============================================================
+MODEL ARCHITECTURE
+============================================================
+AirQualityClassifier(
+  (fc1): Linear(in_features=5, out_features=64, bias=True)
+  (relu1): ReLU()
+  (dropout1): Dropout(p=0.3, inplace=False)
+  (fc2): Linear(in_features=64, out_features=32, bias=True)
+  (relu2): ReLU()
+  (dropout2): Dropout(p=0.3, inplace=False)
+  (fc3): Linear(in_features=32, out_features=5, bias=True)
+)
+
+Total parameters: 2,629
+Estimated model size (float32): 10.27 KB
+Estimated model size (int8 quantized): 2.57 KB
+
+============================================================
+TRAINING
+============================================================
+Epoch [5/50] Train Loss: 0.6437, Train Acc: 55.08% | Test Loss: 0.7996, Test Acc: 47.10%
+Epoch [10/50] Train Loss: 0.5357, Train Acc: 62.12% | Test Loss: 0.7227, Test Acc: 55.40%
+Epoch [15/50] Train Loss: 0.4973, Train Acc: 64.08% | Test Loss: 0.6574, Test Acc: 62.20%
+Epoch [20/50] Train Loss: 0.4735, Train Acc: 66.28% | Test Loss: 0.6653, Test Acc: 57.90%
+Epoch [25/50] Train Loss: 0.4757, Train Acc: 66.22% | Test Loss: 0.6130, Test Acc: 58.30%
+Epoch [30/50] Train Loss: 0.4330, Train Acc: 68.40% | Test Loss: 0.5631, Test Acc: 62.10%
+Epoch [35/50] Train Loss: 0.4451, Train Acc: 69.55% | Test Loss: 0.5516, Test Acc: 61.50%
+Epoch [40/50] Train Loss: 0.4081, Train Acc: 72.78% | Test Loss: 0.4936, Test Acc: 70.00%
+Epoch [45/50] Train Loss: 0.3811, Train Acc: 71.47% | Test Loss: 0.5341, Test Acc: 63.80%
+Epoch [50/50] Train Loss: 0.3792, Train Acc: 73.05% | Test Loss: 0.5056, Test Acc: 65.10%
+
+Best Test Accuracy: 70.00%
+
+============================================================
+FINAL EVALUATION ON TEST SET
+============================================================
+
+Classification Report:
+              precision    recall  f1-score   support
+
+      Normal       0.85      0.92      0.88       133
+     Caution       0.79      0.82      0.80       276
+     Warning       0.87      0.47      0.61       372
+      Danger       0.44      0.76      0.56       158
+    Critical       0.59      0.92      0.72        61
+
+
+    accuracy                           0.70      1000
+   macro avg       0.71      0.78      0.71      1000
+weighted avg       0.76      0.70      0.70      1000
+
+
+
+    accuracy                           0.70      1000
+   macro avg       0.71      0.78      0.71      1000
+weighted avg       0.76      0.70      0.70      1000
+
+
+    accuracy                           0.70      1000
+
+
+    accuracy                           0.70      1000
+   macro avg       0.71      0.78      0.71      1000
+weighted avg       0.76      0.70      0.70      1000
+
+
+Confusion matrix saved as 'confusion_matrix.png'
+
+Training curves saved as 'training_curves.png'
+
+Final model saved as 'air_quality_model.pth'
+Complete model saved as 'air_quality_model_complete.pth'

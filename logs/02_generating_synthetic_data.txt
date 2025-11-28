@@ -1,0 +1,31 @@
+Total dataset: 60,000 samples
+Simulated duration: ~55.6 hours per node
+
+Generating Node 1 data...
+
+Generating Node 2 data...
+
+Generating Node 3 data...
+
+============================================================
+DATASET STATISTICS:
+============================================================
+Total samples: 60,000
+Nodes: 3
+Time range: 2025-12-01 00:00:00 to 2025-12-03 07:33:10
+
+Pollutant Ranges:
+  SO2:  60.0 - 1080.0 µg/m³
+  H2S:  0.0 - 360.0 µg/m³
+
+By Node:
+  Node 1 - SO2: 681.8 µg/m³ (avg), H2S: 274.4 µg/m³ (avg)
+  Node 2 - SO2: 370.4 µg/m³ (avg), H2S: 147.4 µg/m³ (avg)
+  Node 3 - SO2: 232.1 µg/m³ (avg), H2S: 76.2 µg/m³ (avg)
+
+Dataset saved to: kawah_putih_synthetic_v2.csv
+
+Next steps:
+1. Run the labeling script on this data
+2. Train your model on the labeled data
+3. Compare accuracy with previous 70% baseline
